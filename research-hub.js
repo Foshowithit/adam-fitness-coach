@@ -1,5 +1,12 @@
-// Sample compound database - In production, this would come from a secure API
-const compounds = [
+// Load compounds from localStorage or use defaults
+function loadCompoundsDatabase() {
+    const stored = localStorage.getItem('researchHubCompounds');
+    if (stored) {
+        return JSON.parse(stored);
+    }
+    
+    // Default compounds for demo
+    return [
     // SARMs
     {
         id: 1,
@@ -101,16 +108,54 @@ const compounds = [
         dosage: "100-200mg/day",
         cycle: "As needed"
     }
-];
+    ];
+}
 
 // Shopping cart
 let cart = [];
 let activeCategory = 'all';
+let compounds = [];
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    compounds = loadCompoundsDatabase();
+    updateStats();
     displayCompounds(compounds);
     setupEventListeners();
+});
+
+// Update statistics
+function updateStats() {
+    const totalProducts = compounds.length;
+    const uniqueVendors = new Set();
+    compounds.forEach(c => c.sources.forEach(s => uniqueVendors.add(s.vendor)));
+    
+    // Update stat cards
+    const statsHtml = `
+        <div class="stat-card">
+            <h3 class="text-gray-400 text-sm mb-2">Total Products</h3>
+            <p class="text-4xl font-bold">${totalProducts}</p>
+        </div>
+        <div class="stat-card">
+            <h3 class="text-gray-400 text-sm mb-2">Verified Sources</h3>
+            <p class="text-4xl font-bold text-blue-500">${uniqueVendors.size}</p>
+        </div>
+        <div class="stat-card">
+            <h3 class="text-gray-400 text-sm mb-2">Available Now</h3>
+            <p class="text-4xl font-bold text-green-500">${totalProducts}</p>
+        </div>
+    `;
+    
+    document.querySelector('.grid.grid-cols-1.md\\:grid-cols-3').innerHTML = statsHtml;
+}
+
+// Listen for updates from admin panel
+window.addEventListener('message', (event) => {
+    if (event.data.type === 'updateCompounds') {
+        compounds = event.data.compounds;
+        updateStats();
+        displayCompounds(compounds);
+    }
 });
 
 function setupEventListeners() {

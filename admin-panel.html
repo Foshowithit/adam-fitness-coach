@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Hub Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #ffffff;
+        }
+
+        .form-input {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .add-source-btn {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-source-btn:hover {
+            background: rgba(59, 130, 246, 0.3);
+        }
+
+        .source-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .data-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <h1 class="text-3xl font-bold mb-8">Research Hub Admin Panel</h1>
+
+        <!-- Add New Compound -->
+        <div class="data-section">
+            <h2 class="text-2xl font-semibold mb-6">Add New Compound</h2>
+            <form id="compoundForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Compound Name</label>
+                        <input type="text" id="compoundName" class="form-input" placeholder="e.g., Ostarine (MK-2866)" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Category</label>
+                        <select id="category" class="form-input" required>
+                            <option value="sarms">SARMs</option>
+                            <option value="peptides">Peptides</option>
+                            <option value="pct">PCT</option>
+                            <option value="nootropics">Nootropics</option>
+                            <option value="steroids">Steroids</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm text-gray-400 mb-2">Description</label>
+                    <textarea id="description" class="form-input" rows="2" placeholder="Brief description of the compound" required></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Dosage</label>
+                        <input type="text" id="dosage" class="form-input" placeholder="e.g., 10-25mg/day" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Cycle Length</label>
+                        <input type="text" id="cycle" class="form-input" placeholder="e.g., 8-12 weeks" required>
+                    </div>
+                </div>
+
+                <!-- Sources -->
+                <div class="mb-4">
+                    <label class="block text-sm text-gray-400 mb-2">Sources</label>
+                    <div id="sourcesContainer"></div>
+                    <button type="button" onclick="addSourceField()" class="add-source-btn mt-2">
+                        <i class="fas fa-plus mr-2"></i>Add Source
+                    </button>
+                </div>
+
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                    <i class="fas fa-save mr-2"></i>Save Compound
+                </button>
+            </form>
+        </div>
+
+        <!-- Import/Export -->
+        <div class="data-section">
+            <h2 class="text-2xl font-semibold mb-6">Data Management</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h3 class="text-lg font-medium mb-3">Export Data</h3>
+                    <button onclick="exportData()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-download mr-2"></i>Export JSON
+                    </button>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-medium mb-3">Import Data</h3>
+                    <input type="file" id="importFile" accept=".json" class="hidden" onchange="importData(event)">
+                    <button onclick="document.getElementById('importFile').click()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-upload mr-2"></i>Import JSON
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Compounds -->
+        <div class="data-section">
+            <h2 class="text-2xl font-semibold mb-6">Current Compounds</h2>
+            <div id="compoundsList"></div>
+        </div>
+
+        <!-- Data Parser Tool -->
+        <div class="data-section">
+            <h2 class="text-2xl font-semibold mb-6">Quick Data Parser</h2>
+            <p class="text-gray-400 mb-4">Paste source information here to quickly parse and add compounds:</p>
+            <textarea id="parseInput" class="form-input" rows="10" placeholder="Paste product list or pricing information here..."></textarea>
+            <button onclick="parseData()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg mt-4 transition-colors">
+                <i class="fas fa-magic mr-2"></i>Parse & Add
+            </button>
+        </div>
+
+        <!-- Back Link -->
+        <div class="text-center mt-8">
+            <a href="research-hub.html" class="text-blue-500 hover:text-blue-400 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Research Hub
+            </a>
+        </div>
+    </div>
+
+    <script src="admin-panel.js"></script>
+</body>
+</html>

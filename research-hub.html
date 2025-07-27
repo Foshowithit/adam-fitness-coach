@@ -322,14 +322,25 @@
             Users are responsible for complying with all local laws and regulations.
         </div>
 
-        <!-- Back to main site -->
-        <div class="text-center mt-8">
-            <a href="/" class="text-blue-500 hover:text-blue-400 transition-colors">
-                <i class="fas fa-arrow-left mr-2"></i> Back to Adam Fitness Coach
-            </a>
+        <!-- Admin Controls -->
+        <div class="text-center mt-8 space-y-4">
+            <div>
+                <button onclick="loadMovieData()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors mr-2">
+                    <i class="fas fa-film mr-2"></i> Load Movie Prop Data
+                </button>
+                <a href="admin-panel.html" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors inline-block">
+                    <i class="fas fa-cog mr-2"></i> Admin Panel
+                </a>
+            </div>
+            <div>
+                <a href="/" class="text-blue-500 hover:text-blue-400 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to Adam Fitness Coach
+                </a>
+            </div>
         </div>
     </div>
 
     <script src="research-hub.js"></script>
+    <script src="movie-data-generator.js"></script>
 </body>
 </html>
