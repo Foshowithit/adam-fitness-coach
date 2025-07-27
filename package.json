@@ -1,0 +1,23 @@
+{
+  "name": "adam-fitness-coach",
+  "version": "1.0.0",
+  "description": "AI-powered fitness coaching platform with personalized assessments and expert guidance",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'No build step required for static site'",
+    "start": "echo 'This is a static site deployed on Netlify'"
+  },
+  "keywords": [
+    "fitness",
+    "coaching",
+    "ai",
+    "bodybuilding",
+    "health",
+    "assessment"
+  ],
+  "author": "Adam - Pro Bodybuilder",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+}

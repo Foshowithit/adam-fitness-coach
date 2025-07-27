@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Fitness Assessment - Adam Coach</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #dc2626;
+            --primary-red-hover: #b91c1c;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #475569;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --accent-blue: #60a5fa;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: var(--text-primary);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(220, 38, 38, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(96, 165, 250, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .assessment-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .progress-bar {
+            background: var(--card-bg);
+            border-radius: 20px;
+            height: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--primary-red), #ef4444);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 20px;
+        }
+
+        .question-card {
+            background: linear-gradient(135deg, var(--card-bg), #334155);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .question-card.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .question-card.hidden {
+            display: none;
+        }
+
+        .question-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .question-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 20px;
+        }
+
+        .option-button {
+            background: linear-gradient(135deg, var(--card-bg), #374151);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .option-button:hover::before {
+            left: 100%;
+        }
+
+        .option-button:hover {
+            border-color: var(--primary-red);
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), var(--card-bg));
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.2);
+        }
+
+        .option-button.selected {
+            border-color: var(--primary-red);
+            background: linear-gradient(135deg, var(--primary-red), #ef4444);
+            color: white;
+        }
+
+        .option-icon {
+            display: inline-block;
+            width: 20px;
+            margin-right: 12px;
+            color: var(--primary-red);
+        }
+
+        .option-button.selected .option-icon {
+            color: white;
+        }
+
+        .text-input {
+            background: linear-gradient(135deg, var(--card-bg), #374151);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            color: var(--text-primary);
+            width: 100%;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            resize: none;
+            min-height: 80px;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+        }
+
+        .next-button {
+            background: linear-gradient(135deg, var(--primary-red), #ef4444);
+            border: none;
+            border-radius: 12px;
+            padding: 16px 32px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .next-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .next-button:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
+        }
+
+        .ai-thinking {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .thinking-dots {
+            display: flex;
+            gap: 8px;
+            margin-left: 12px;
+        }
+
+        .thinking-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary-red);
+            border-radius: 50%;
+            animation: thinking 1.4s infinite ease-in-out;
+        }
+
+        .thinking-dot:nth-child(1) { animation-delay: 0s; }
+        .thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+        .thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes thinking {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.5); opacity: 1; }
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, var(--primary-red), #ef4444);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 12px 40px rgba(220, 38, 38, 0.3);
+        }
+
+        .back-button {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 24px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .back-button:hover {
+            border-color: var(--primary-red);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .assessment-container {
+                padding: 16px;
+            }
+            
+            .question-card {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="assessment-container">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-red-600 to-red-700 rounded-full mb-4">
+                <span class="text-2xl font-bold text-white">A</span>
+            </div>
+            <h1 class="text-3xl font-bold text-white mb-2">AI Fitness Assessment</h1>
+            <p class="text-gray-400">Get your personalized plan in under 2 minutes</p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar mb-8">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+
+        <!-- Questions Container -->
+        <div id="questionsContainer">
+            
+            <!-- Question 1: Primary Goal -->
+            <div class="question-card active" data-question="1">
+                <h2 class="question-title">What's your main fitness goal?</h2>
+                <p class="question-subtitle">This helps me understand what you want to achieve</p>
+                
+                <button class="option-button" data-value="muscle">
+                    <i class="fas fa-dumbbell option-icon"></i>
+                    <div>
+                        <div class="font-semibold">Build Muscle & Strength</div>
+                        <div class="text-sm text-gray-400">Get bigger, stronger, more defined</div>
+                    </div>
+                </button>
+                
+                <button class="option-button" data-value="fat-loss">
+                    <i class="fas fa-fire option-icon"></i>
+                    <div>
+                        <div class="font-semibold">Lose Fat & Get Lean</div>
+                        <div class="text-sm text-gray-400">Cut body fat, reveal muscle definition</div>
+                    </div>
+                </button>
+                
+                <button class="option-button" data-value="performance">
+                    <i class="fas fa-rocket option-icon"></i>
+                    <div>
+                        <div class="font-semibold">Improve Performance</div>
+                        <div class="text-sm text-gray-400">Get stronger, faster, more athletic</div>
+                    </div>
+                </button>
+                
+                <button class="option-button" data-value="recomp">
+                    <i class="fas fa-exchange-alt option-icon"></i>
+                    <div>
+                        <div class="font-semibold">Body Recomposition</div>
+                        <div class="text-sm text-gray-400">Build muscle while losing fat</div>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Question 2: Experience Level -->
+            <div class="question-card hidden" data-question="2">
+                <h2 class="question-title">How experienced are you with training?</h2>
+                <p class="question-subtitle">This determines the complexity of your program</p>
+                
+                <button class="option-button" data-value="beginner">
+                    <i class="fas fa-seedling option-icon"></i>
+                    <div>
+                        <div class="font-semibold">Beginner (0-1 years)</div>
+                        <div class="text-sm text-gray-400">New to consistent training</div>
+                    </div>
+                </button>
+                
+                <button class="option-button" data-value="intermediate">
+                    <i class="fas fa-chart-line option-icon"></i>
+                    <div>
+                        <div class="font-semibold">Intermediate (1-3 years)</div>
+                        <div class="text-sm text-gray-400">Regular training, understand basics</div>
+                    </div>
+                </button>
+                
+                <button class="option-button" data-value="advanced">
+                    <i class="fas fa-trophy option-icon"></i>
+                    <div>
+                        <div class="font-semibold">Advanced (3+ years)</div>
+                        <div class="text-sm text-gray-400">Serious lifter, advanced knowledge</div>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Question 3: Training Frequency -->
+            <div class="question-card hidden" data-question="3">
+                <h2 class="question-title">How many days per week can you train?</h2>
+                <p class="question-subtitle">Be realistic - consistency beats perfection</p>
+                
+                <button class="option-button" data-value="3">
+                    <i class="fas fa-calendar-check option-icon"></i>
+                    <div>
+                        <div class="font-semibold">3 Days/Week</div>
+                        <div class="text-sm text-gray-400">Full body, time-efficient</div>
+                    </div>
+                </button>
+                
+                <button class="option-button" data-value="4">
+                    <i class="fas fa-calendar-alt option-icon"></i>
+                    <div>
+                        <div class="font-semibold">4 Days/Week</div>
+                        <div class="text-sm text-gray-400">Upper/lower or push/pull splits</div>
+                    </div>
+                </button>
+                
+                <button class="option-button" data-value="5-6">
+                    <i class="fas fa-fire option-icon"></i>
+                    <div>
+                        <div class="font-semibold">5-6 Days/Week</div>
+                        <div class="text-sm text-gray-400">Body part splits, serious training</div>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Question 4: Equipment Access -->
+            <div class="question-card hidden" data-question="4">
+                <h2 class="question-title">What equipment do you have access to?</h2>
+                <p class="question-subtitle">I'll design your program around what you can use</p>
+                
+                <button class="option-button" data-value="full-gym">
+                    <i class="fas fa-building option-icon"></i>
+                    <div>
+                        <div class="font-semibold">Full Commercial Gym</div>
+                        <div class="text-sm text-gray-400">All machines, free weights, cables</div>
+                    </div>
+                </button>
+                
+                <button class="option-button" data-value="home-gym">
+                    <i class="fas fa-home option-icon"></i>
+                    <div>
+                        <div class="font-semibold">Home Gym Setup</div>
+                        <div class="text-sm text-gray-400">Weights, rack, basic equipment</div>
+                    </div>
+                </button>
+                
+                <button class="option-button" data-value="minimal">
+                    <i class="fas fa-dumbbell option-icon"></i>
+                    <div>
+                        <div class="font-semibold">Minimal Equipment</div>
+                        <div class="text-sm text-gray-400">Dumbbells, bands, bodyweight</div>
+                    </div>
+                </button>
+                
+                <button class="option-button" data-value="bodyweight">
+                    <i class="fas fa-running option-icon"></i>
+                    <div>
+                        <div class="font-semibold">Bodyweight Only</div>
+                        <div class="text-sm text-gray-400">No equipment available</div>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Question 5: Quick Details -->
+            <div class="question-card hidden" data-question="5">
+                <h2 class="question-title">Tell me a bit about yourself</h2>
+                <p class="question-subtitle">Any specifics that will help me design your program</p>
+                
+                <textarea 
+                    class="text-input" 
+                    placeholder="Optional: Age, injuries, dietary preferences, specific challenges, timeline, etc. The more you tell me, the better I can help."
+                    data-value="details"
+                ></textarea>
+            </div>
+
+            <!-- AI Processing -->
+            <div class="question-card hidden" data-question="processing">
+                <div class="ai-thinking">
+                    <i class="fas fa-brain text-red-400 text-2xl"></i>
+                    <span class="ml-3">Adam AI is analyzing your responses</span>
+                    <div class="thinking-dots">
+                        <div class="thinking-dot"></div>
+                        <div class="thinking-dot"></div>
+                        <div class="thinking-dot"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="question-card hidden" data-question="results">
+                <div class="result-card">
+                    <i class="fas fa-check-circle text-4xl mb-4"></i>
+                    <h2 class="text-2xl font-bold mb-2">Assessment Complete!</h2>
+                    <p class="mb-6">Your personalized training and nutrition protocol is ready</p>
+                    <button class="next-button" onclick="window.location.href='index.html'">
+                        <i class="fas fa-comments mr-2"></i>
+                        Chat with Adam About Your Plan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex justify-between items-center mt-6">
+            <button class="back-button hidden" id="backButton" onclick="previousQuestion()">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back
+            </button>
+            <div class="flex-1"></div>
+            <button class="next-button hidden" id="nextButton" onclick="nextQuestion()" disabled>
+                Next
+                <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="mt-8 p-4 bg-yellow-900 bg-opacity-30 border border-yellow-600 border-opacity-50 rounded-lg text-center">
+            <p class="text-yellow-300 text-sm font-500 mb-1">⚠️ Disclaimer</p>
+            <p class="text-yellow-200 text-xs">For research and entertainment purposes only. Consult healthcare professionals before starting any fitness program.</p>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 1;
+        let answers = {};
+        const totalQuestions = 5;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Option button clicks
+            document.querySelectorAll('.option-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const questionCard = this.closest('.question-card');
+                    const questionNum = questionCard.dataset.question;
+                    
+                    // Remove selected class from siblings
+                    questionCard.querySelectorAll('.option-button').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked button
+                    this.classList.add('selected');
+                    
+                    // Store answer
+                    answers[`q${questionNum}`] = this.dataset.value;
+                    
+                    // Enable next button
+                    document.getElementById('nextButton').disabled = false;
+                    
+                    // Auto-advance after short delay (except for last question)
+                    if (questionNum < totalQuestions) {
+                        setTimeout(() => {
+                            nextQuestion();
+                        }, 500);
+                    }
+                });
+            });
+
+            // Text input
+            document.querySelector('textarea[data-value="details"]').addEventListener('input', function() {
+                answers.q5 = this.value;
+                document.getElementById('nextButton').disabled = false;
+            });
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < totalQuestions) {
+                // Hide current question
+                document.querySelector(`[data-question="${currentQuestion}"]`).classList.add('hidden');
+                document.querySelector(`[data-question="${currentQuestion}"]`).classList.remove('active');
+                
+                currentQuestion++;
+                
+                // Show next question
+                const nextCard = document.querySelector(`[data-question="${currentQuestion}"]`);
+                nextCard.classList.remove('hidden');
+                setTimeout(() => {
+                    nextCard.classList.add('active');
+                }, 50);
+                
+                updateProgress();
+                updateButtons();
+                
+            } else if (currentQuestion === totalQuestions) {
+                // Process results
+                processAssessment();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 1) {
+                // Hide current question
+                document.querySelector(`[data-question="${currentQuestion}"]`).classList.add('hidden');
+                document.querySelector(`[data-question="${currentQuestion}"]`).classList.remove('active');
+                
+                currentQuestion--;
+                
+                // Show previous question
+                const prevCard = document.querySelector(`[data-question="${currentQuestion}"]`);
+                prevCard.classList.remove('hidden');
+                setTimeout(() => {
+                    prevCard.classList.add('active');
+                }, 50);
+                
+                updateProgress();
+                updateButtons();
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function updateButtons() {
+            const backButton = document.getElementById('backButton');
+            const nextButton = document.getElementById('nextButton');
+            
+            // Show/hide back button
+            if (currentQuestion > 1) {
+                backButton.classList.remove('hidden');
+            } else {
+                backButton.classList.add('hidden');
+            }
+            
+            // Show/hide next button based on question
+            if (currentQuestion < totalQuestions) {
+                nextButton.classList.remove('hidden');
+                nextButton.textContent = 'Next';
+                nextButton.innerHTML = 'Next <i class="fas fa-arrow-right ml-2"></i>';
+            } else if (currentQuestion === totalQuestions) {
+                nextButton.classList.remove('hidden');
+                nextButton.innerHTML = '<i class="fas fa-brain mr-2"></i> Generate My Plan';
+            } else {
+                nextButton.classList.add('hidden');
+            }
+            
+            // Disable next button until answer is selected
+            const currentCard = document.querySelector(`[data-question="${currentQuestion}"]`);
+            const hasSelection = currentCard.querySelector('.option-button.selected') || 
+                               currentCard.querySelector('textarea')?.value;
+            nextButton.disabled = !hasSelection;
+        }
+
+        async function processAssessment() {
+            // Hide current question
+            document.querySelector(`[data-question="${currentQuestion}"]`).classList.add('hidden');
+            document.querySelector(`[data-question="${currentQuestion}"]`).classList.remove('active');
+            
+            // Show processing
+            const processingCard = document.querySelector('[data-question="processing"]');
+            processingCard.classList.remove('hidden');
+            setTimeout(() => {
+                processingCard.classList.add('active');
+            }, 50);
+            
+            // Hide navigation
+            document.getElementById('backButton').classList.add('hidden');
+            document.getElementById('nextButton').classList.add('hidden');
+            
+            // Store assessment data
+            localStorage.setItem('fitnessAssessment', JSON.stringify(answers));
+            
+            // Simulate AI processing
+            setTimeout(() => {
+                showResults();
+            }, 3000);
+        }
+
+        function showResults() {
+            // Hide processing
+            document.querySelector('[data-question="processing"]').classList.add('hidden');
+            document.querySelector('[data-question="processing"]').classList.remove('active');
+            
+            // Show results
+            const resultsCard = document.querySelector('[data-question="results"]');
+            resultsCard.classList.remove('hidden');
+            setTimeout(() => {
+                resultsCard.classList.add('active');
+            }, 50);
+            
+            // Update progress to 100%
+            document.getElementById('progressBar').style.width = '100%';
+        }
+    </script>
+</body>
+</html>

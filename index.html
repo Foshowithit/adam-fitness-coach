@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adam - Pro Fitness Coach</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #dc2626;
+            --primary-red-hover: #b91c1c;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #475569;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --accent-blue: #60a5fa;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: var(--text-primary);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Animated background elements */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(220, 38, 38, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(96, 165, 250, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(220, 38, 38, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(30, 41, 59, 0.8) 100%);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .coach-avatar-enhanced {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-red), #ef4444);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 8px 32px rgba(220, 38, 38, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chat-container {
+            height: calc(100vh - 280px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-red) var(--card-bg);
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+        }
+
+        .chat-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .chat-container::-webkit-scrollbar-track {
+            background: var(--card-bg);
+            border-radius: 4px;
+        }
+        .chat-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--primary-red), #ef4444);
+            border-radius: 4px;
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+            border-radius: 18px 18px 4px 18px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            max-width: 85%;
+            align-self: flex-end;
+            line-height: 1.5;
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+        }
+
+        .coach-message {
+            background: linear-gradient(135deg, var(--card-bg), #334155);
+            border-radius: 18px 18px 18px 4px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            max-width: 85%;
+            align-self: flex-start;
+            line-height: 1.5;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(71, 85, 105, 0.5);
+        }
+
+        .coach-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-red), #ef4444);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .quick-action {
+            background: linear-gradient(135deg, var(--card-bg), #334155);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-action:hover {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), var(--card-bg));
+            border-color: var(--primary-red);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.2);
+        }
+
+        .message-input {
+            background: linear-gradient(135deg, var(--card-bg), #334155);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            resize: none;
+            overflow-y: auto;
+            min-height: 50px;
+            max-height: 120px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+            background: var(--card-bg);
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, var(--primary-red), #ef4444);
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+
+        .send-button:hover {
+            background: linear-gradient(135deg, var(--primary-red-hover), var(--primary-red));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+        }
+
+        .send-button:active {
+            transform: scale(0.95);
+        }
+
+        .assessment-button {
+            background: linear-gradient(135deg, var(--primary-red), #ef4444, var(--primary-red));
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(220, 38, 38, 0.5);
+            box-shadow: 0 8px 32px rgba(220, 38, 38, 0.2);
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .assessment-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(220, 38, 38, 0.3);
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            column-gap: 0.5rem;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(135deg, var(--primary-red), #ef4444);
+            border-radius: 50%;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingAnimation {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.5); opacity: 1; }
+        }
+
+        .online-indicator {
+            width: 12px;
+            height: 12px;
+            background: #10b981;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            border: 2px solid var(--dark-bg);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @media (max-width: 768px) {
+            .coach-avatar-enhanced {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .chat-container {
+                height: calc(100vh - 320px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-6 max-w-5xl">
+        <!-- Enhanced Header -->
+        <header class="hero-section p-6 mb-6 relative z-10">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="relative">
+                        <div class="coach-avatar-enhanced mr-6">A</div>
+                        <div class="online-indicator"></div>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl md:text-4xl font-800 text-white mb-2 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                            Adam - Performance Coach
+                        </h1>
+                        <p class="text-red-400 text-sm md:text-base font-500 mb-1">Pro Bodybuilder & Performance Specialist</p>
+                        <p class="text-gray-400 text-xs md:text-sm">Evidence-based training • Research-driven protocols • Real results</p>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="text-right">
+                        <div class="flex items-center text-green-400 text-sm mb-1">
+                            <i class="fas fa-circle text-xs mr-2"></i>
+                            Online Now
+                        </div>
+                        <div class="text-gray-400 text-xs">Response time: ~30 sec</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Enhanced Chat area -->
+        <div class="chat-container flex flex-col mb-6 p-6">
+            <!-- Enhanced initial coach message -->
+            <div class="flex items-start mb-6">
+                <div class="coach-avatar mr-4 text-sm">A</div>
+                <div class="coach-message">
+                    <div class="flex items-center mb-2">
+                        <span class="font-600 text-red-400">Adam</span>
+                        <span class="text-xs text-gray-500 ml-2">Pro Bodybuilder</span>
+                    </div>
+                    <p class="mb-3">Welcome to my coaching platform. I'm Adam - Pro bodybuilder with 15+ years specializing in evidence-based bodybuilding and performance enhancement.</p>
+                    <p class="mb-3">My approach combines scientific precision with real-world experience. I believe in conservative risk assessment, systematic progression, and proper monitoring protocols.</p>
+                    <p class="text-gray-300">What specific aspect of training, nutrition, or performance enhancement can I help you optimize today?</p>
+                </div>
+            </div>
+            
+            <!-- Dynamic messages will be added here -->
+            <div id="chat-messages"></div>
+            
+            <!-- Enhanced typing indicator -->
+            <div id="typing-indicator" class="flex items-start mb-4 hidden">
+                <div class="coach-avatar mr-4 text-sm">A</div>
+                <div class="coach-message typing-indicator">
+                    <span class="text-xs text-gray-400 mr-3">Adam is typing</span>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Quick action buttons -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+            <button class="quick-action py-4 px-4 text-sm text-gray-300 hover:text-white relative z-10 group" data-query="Best workout split for muscle growth?">
+                <i class="fas fa-dumbbell text-red-400 mb-2 text-lg"></i>
+                <div class="font-500">Workout Split</div>
+                <div class="text-xs text-gray-500 group-hover:text-gray-300">Optimal training</div>
+            </button>
+            <button class="quick-action py-4 px-4 text-sm text-gray-300 hover:text-white relative z-10 group" data-query="How to optimize testosterone naturally?">
+                <i class="fas fa-chart-line text-blue-400 mb-2 text-lg"></i>
+                <div class="font-500">Testosterone</div>
+                <div class="text-xs text-gray-500 group-hover:text-gray-300">Natural optimization</div>
+            </button>
+            <button class="quick-action py-4 px-4 text-sm text-gray-300 hover:text-white relative z-10 group" data-query="Best supplements for recovery?">
+                <i class="fas fa-pills text-green-400 mb-2 text-lg"></i>
+                <div class="font-500">Supplements</div>
+                <div class="text-xs text-gray-500 group-hover:text-gray-300">Recovery stack</div>
+            </button>
+            <button class="quick-action py-4 px-4 text-sm text-gray-300 hover:text-white relative z-10 group" data-query="How to read bloodwork for bodybuilding?">
+                <i class="fas fa-microscope text-purple-400 mb-2 text-lg"></i>
+                <div class="font-500">Bloodwork</div>
+                <div class="text-xs text-gray-500 group-hover:text-gray-300">Lab interpretation</div>
+            </button>
+        </div>
+
+        <!-- Enhanced Assessment Button -->
+        <div class="mb-6">
+            <a href="assessment.html" class="assessment-button block text-white px-6 py-4 font-600 text-center transition-all duration-300 relative z-10">
+                <div class="flex items-center justify-center">
+                    <i class="fas fa-clipboard-check mr-3 text-xl"></i>
+                    <div>
+                        <div class="text-lg">Complete AI Assessment</div>
+                        <div class="text-sm opacity-90">Get your personalized training & nutrition protocol in 2 minutes</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Enhanced Input area -->
+        <div class="flex items-end space-x-3">
+            <div class="flex-1 relative">
+                <textarea id="message-input" class="message-input w-full p-4 pr-12" placeholder="Ask Adam about training, nutrition, or performance enhancement..."></textarea>
+                <div class="absolute right-3 bottom-3 text-gray-500">
+                    <i class="fas fa-paper-plane text-sm"></i>
+                </div>
+            </div>
+            <button id="send-button" class="send-button px-6 py-4 text-white flex-shrink-0 relative z-10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Disclaimer and Trust indicators -->
+        <div class="mt-6 p-4 bg-yellow-900 bg-opacity-30 border border-yellow-600 border-opacity-50 rounded-lg text-center">
+            <p class="text-yellow-300 text-sm font-500 mb-2">⚠️ Important Disclaimer</p>
+            <p class="text-yellow-200 text-xs">This content is for research and entertainment purposes only. Not medical advice. Consult healthcare professionals before making changes to training, nutrition, or supplement protocols.</p>
+        </div>
+        
+        <div class="mt-6 grid grid-cols-3 gap-4 text-center text-gray-500 text-xs">
+            <div>
+                <i class="fas fa-shield-alt text-green-400 mb-1"></i>
+                <div>Evidence-Based</div>
+            </div>
+            <div>
+                <i class="fas fa-flask text-blue-400 mb-1"></i>
+                <div>Research-Driven</div>
+            </div>
+            <div>
+                <i class="fas fa-certificate text-red-400 mb-1"></i>
+                <div>Pro Certified</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const chatMessages = document.getElementById('chat-messages');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const quickActionButtons = document.querySelectorAll('.quick-action');
+        const typingIndicator = document.getElementById('typing-indicator');
+
+        // Chat history for context
+        let chatHistory = [];
+
+        // Quick action handlers
+        quickActionButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const query = button.getAttribute('data-query');
+                messageInput.value = query;
+                handleSendMessage();
+            });
+        });
+
+        // Send button handler
+        sendButton.addEventListener('click', handleSendMessage);
+
+        // Enter key handler
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage();
+            }
+        });
+
+        // Auto-resize textarea
+        messageInput.addEventListener('input', () => {
+            messageInput.style.height = 'auto';
+            messageInput.style.height = messageInput.scrollHeight + 'px';
+        });
+
+        function handleSendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addUserMessage(message);
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+
+            // Send to AI
+            sendMessage(message);
+        }
+
+        function addUserMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex justify-end mb-4';
+            messageDiv.innerHTML = `
+                <div class="user-message">
+                    ${formatMessage(message)}
+                </div>
+            `;
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function addCoachMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex items-start mb-4';
+            messageDiv.innerHTML = `
+                <div class="coach-avatar mr-4 text-sm">A</div>
+                <div class="coach-message">
+                    <div class="flex items-center mb-2">
+                        <span class="font-600 text-red-400">Adam</span>
+                        <span class="text-xs text-gray-500 ml-2">Pro Bodybuilder</span>
+                    </div>
+                    <div class="response-content">
+                        ${formatMessage(message)}
+                    </div>
+                </div>
+            `;
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function showTypingIndicator() {
+            typingIndicator.classList.remove('hidden');
+            scrollToBottom();
+        }
+
+        function hideTypingIndicator() {
+            typingIndicator.classList.add('hidden');
+        }
+
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function formatMessage(text) {
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n/g, '<br>');
+        }
+
+        async function sendMessage(userMessage) {
+            try {
+                // Add user message to chat history
+                chatHistory.push({ role: "user", content: userMessage });
+                
+                // Show typing indicator
+                showTypingIndicator();
+                
+                // Get assessment data from localStorage if available
+                const assessmentData = localStorage.getItem('fitnessAssessment') 
+                    ? JSON.parse(localStorage.getItem('fitnessAssessment')) 
+                    : null;
+                
+                const requestBody = {
+                    message: userMessage,
+                    chatHistory: chatHistory,
+                    assessmentData: assessmentData
+                };
+                
+                // Call API
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody),
+                });
+                
+                hideTypingIndicator();
+                
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+                    const aiResponse = data.candidates[0].content.parts[0].text;
+                    
+                    // Add AI response to chat history
+                    chatHistory.push({ role: "assistant", content: aiResponse });
+                    
+                    // Display response
+                    addCoachMessage(aiResponse);
+                } else {
+                    addCoachMessage("I'm having trouble processing that right now. Please try again in a moment.");
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                hideTypingIndicator();
+                addCoachMessage("I'm currently offline. Please try again later or complete the assessment to get started.");
+            }
+        }
+
+        // Initialize
+        console.log('🤖 Adam AI Coach initialized');
+    </script>
+</body>
+</html>
