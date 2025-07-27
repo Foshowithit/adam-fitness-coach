@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Underground Research Hub - Adam Fitness Coach</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .gradient-header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .search-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .search-input {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            width: 100%;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .compound-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .compound-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .compound-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .source-badge {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            margin: 0.25rem;
+        }
+
+        .price-tag {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: inline-block;
+            margin: 0.5rem 0;
+        }
+
+        .order-builder {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .selected-item {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 1rem;
+            border-radius: 12px;
+            margin: 0.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .email-template {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .copy-btn {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: rgba(59, 130, 246, 0.3);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .filter-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .filter-tab.active {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.5);
+            color: #3b82f6;
+        }
+
+        .disclaimer {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 2rem 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #fbbf24;
+        }
+
+        @media (max-width: 768px) {
+            .compound-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .filter-tabs {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Header -->
+        <div class="gradient-header p-8 rounded-2xl mb-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 flex items-center justify-center gap-4">
+                <i class="fas fa-flask text-blue-500"></i>
+                Underground Research Hub
+            </h1>
+            <p class="text-xl text-gray-300">AI-powered research tool for performance enhancement compounds</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="stat-card">
+                <h3 class="text-gray-400 text-sm mb-2">Total Products</h3>
+                <p class="text-4xl font-bold">865</p>
+            </div>
+            <div class="stat-card">
+                <h3 class="text-gray-400 text-sm mb-2">Verified Sources</h3>
+                <p class="text-4xl font-bold text-blue-500">13</p>
+            </div>
+            <div class="stat-card">
+                <h3 class="text-gray-400 text-sm mb-2">Available Now</h3>
+                <p class="text-4xl font-bold text-green-500">796</p>
+            </div>
+        </div>
+
+        <!-- Search -->
+        <div class="search-container">
+            <h2 class="text-2xl font-bold mb-4">Search Compounds</h2>
+            <input 
+                type="text" 
+                id="searchInput" 
+                class="search-input" 
+                placeholder="Search by name, category, or effects... (e.g., 'Ostarine', 'SARM', 'muscle growth')"
+            >
+            
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <div class="filter-tab active" data-category="all">All</div>
+                <div class="filter-tab" data-category="sarms">SARMs</div>
+                <div class="filter-tab" data-category="peptides">Peptides</div>
+                <div class="filter-tab" data-category="nootropics">Nootropics</div>
+                <div class="filter-tab" data-category="pct">PCT</div>
+                <div class="filter-tab" data-category="other">Other</div>
+            </div>
+        </div>
+
+        <!-- Results Grid -->
+        <div id="resultsContainer">
+            <h3 class="text-xl font-semibold mb-4">Popular Compounds</h3>
+            <div class="compound-grid" id="compoundGrid">
+                <!-- Compounds will be dynamically loaded here -->
+            </div>
+        </div>
+
+        <!-- Order Builder -->
+        <div class="order-builder" id="orderBuilder" style="display: none;">
+            <h2 class="text-2xl font-bold mb-4">Order Builder</h2>
+            <div id="selectedItems"></div>
+            <div class="mt-4 p-4 bg-gray-900 rounded-lg">
+                <div class="flex justify-between mb-2">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">$0.00</span>
+                </div>
+                <div class="flex justify-between mb-2">
+                    <span>Estimated Shipping:</span>
+                    <span id="shipping">$0.00</span>
+                </div>
+                <div class="flex justify-between text-xl font-bold">
+                    <span>Total:</span>
+                    <span id="total">$0.00</span>
+                </div>
+            </div>
+            <button class="generate-btn" onclick="generateEmailTemplate()">
+                <i class="fas fa-envelope mr-2"></i> Generate Order Email
+            </button>
+        </div>
+
+        <!-- Email Template -->
+        <div id="emailTemplateContainer" style="display: none;">
+            <h3 class="text-xl font-semibold mb-4">Email Template</h3>
+            <div class="email-template" id="emailTemplate"></div>
+            <button class="copy-btn" onclick="copyEmailTemplate()">
+                <i class="fas fa-copy mr-2"></i> Copy to Clipboard
+            </button>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="disclaimer">
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            <strong>Research Purposes Only</strong> - This tool is for informational purposes only. 
+            All compounds are for research use only and not for human consumption. 
+            Users are responsible for complying with all local laws and regulations.
+        </div>
+
+        <!-- Back to main site -->
+        <div class="text-center mt-8">
+            <a href="/" class="text-blue-500 hover:text-blue-400 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Adam Fitness Coach
+            </a>
+        </div>
+    </div>
+
+    <script src="research-hub.js"></script>
+</body>
+</html>
