@@ -92,21 +92,7 @@ exports.handler = async (event, context) => {
     }
 
     try {
-        const API_KEY = process.env.GEMINI_API_KEY;
-        
-        if (!API_KEY) {
-            return {
-                statusCode: 500,
-                body: JSON.stringify({ 
-                    error: 'Missing Gemini API key',
-                    instructions: 'Please set GEMINI_API_KEY environment variable'
-                }),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                }
-            };
-        }
+        const API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyBy5g6Esu6ESIK5733xhMiJNrMT9LbfahU';
 
         const { message, chatHistory, assessmentData } = JSON.parse(event.body);
 
