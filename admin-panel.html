@@ -152,10 +152,36 @@
             <div id="compoundsList"></div>
         </div>
 
+        <!-- Firecrawl Scraper -->
+        <div class="data-section">
+            <h2 class="text-2xl font-semibold mb-6">Firecrawl Web Scraper</h2>
+            <p class="text-gray-400 mb-4">Automatically extract compound data from vendor pages:</p>
+            
+            <div class="mb-4">
+                <label class="block text-sm text-gray-400 mb-2">Firecrawl API Key</label>
+                <input type="password" id="firecrawlApiKey" class="form-input" placeholder="Enter your Firecrawl API key" value="fc-8e7f7056c1304394b06fd2e0d78bd750">
+                <p class="text-xs text-gray-500 mt-1">Get your API key at <a href="https://firecrawl.com" target="_blank" class="text-blue-500">firecrawl.com</a></p>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-sm text-gray-400 mb-2">Page URL</label>
+                <input type="url" id="scrapeUrl" class="form-input" placeholder="https://example.com/vendor-page">
+            </div>
+            
+            <button onclick="handleFirecrawlScrape()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
+                <i class="fas fa-spider mr-2"></i>Scrape Page
+            </button>
+            
+            <div id="loadingIndicator" class="mt-4 text-center hidden">
+                <i class="fas fa-spinner fa-spin text-2xl text-purple-500"></i>
+                <p class="text-gray-400 mt-2">Scraping page...</p>
+            </div>
+        </div>
+
         <!-- Data Parser Tool -->
         <div class="data-section">
-            <h2 class="text-2xl font-semibold mb-6">Quick Data Parser</h2>
-            <p class="text-gray-400 mb-4">Paste source information here to quickly parse and add compounds:</p>
+            <h2 class="text-2xl font-semibold mb-6">Manual Data Parser</h2>
+            <p class="text-gray-400 mb-4">Paste source information here to manually parse and add compounds:</p>
             <textarea id="parseInput" class="form-input" rows="10" placeholder="Paste product list or pricing information here..."></textarea>
             <button onclick="parseData()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg mt-4 transition-colors">
                 <i class="fas fa-magic mr-2"></i>Parse & Add
@@ -171,5 +197,42 @@
     </div>
 
     <script src="admin-panel.js"></script>
+    <script src="firecrawl-scraper.js"></script>
+    <script>
+        // Handle Firecrawl scraping
+        async function handleFirecrawlScrape() {
+            const apiKey = document.getElementById('firecrawlApiKey').value;
+            const url = document.getElementById('scrapeUrl').value;
+            
+            if (!apiKey || !url) {
+                alert('Please enter both API key and URL');
+                return;
+            }
+            
+            // Save API key for future use
+            localStorage.setItem('firecrawlApiKey', apiKey);
+            
+            // Show loading
+            document.getElementById('loadingIndicator').classList.remove('hidden');
+            
+            try {
+                await scrapeWithFirecrawl(url, apiKey);
+                // Refresh the compounds list
+                loadCompounds();
+            } catch (error) {
+                console.error('Scraping error:', error);
+            } finally {
+                document.getElementById('loadingIndicator').classList.add('hidden');
+            }
+        }
+        
+        // Load saved API key
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedKey = localStorage.getItem('firecrawlApiKey');
+            if (savedKey) {
+                document.getElementById('firecrawlApiKey').value = savedKey;
+            }
+        });
+    </script>
 </body>
 </html>
