@@ -244,14 +244,135 @@
         }
 
         @media (max-width: 768px) {
-            .coach-avatar-enhanced {
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
+            body {
+                padding: 0;
+                margin: 0;
             }
-            
+
+            .container {
+                padding: 1rem;
+                max-width: 100%;
+            }
+
+            .hero-section {
+                padding: 1.5rem 0;
+                margin-bottom: 1rem;
+            }
+
+            .hero-section .flex {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .hero-section h1 {
+                font-size: 1.75rem;
+                line-height: 1.2;
+                margin-bottom: 0.5rem;
+            }
+
+            .hero-section p {
+                font-size: 0.875rem;
+            }
+
+            .coach-avatar-enhanced {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+                margin: 0 auto;
+            }
+
             .chat-container {
-                height: calc(100vh - 320px);
+                height: calc(100vh - 450px);
+                min-height: 300px;
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .coach-message, .user-message {
+                max-width: 85%;
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+                line-height: 1.4;
+                border-radius: 18px;
+            }
+
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+                margin-bottom: 1rem;
+            }
+
+            .quick-action {
+                padding: 0.75rem;
+                font-size: 0.8rem;
+            }
+
+            .assessment-button {
+                padding: 1rem;
+                font-size: 0.9rem;
+                margin-bottom: 1rem;
+            }
+
+            .assessment-button .text-lg {
+                font-size: 1rem;
+            }
+
+            .assessment-button .text-sm {
+                font-size: 0.8rem;
+            }
+
+            .message-input {
+                padding: 0.75rem 1rem;
+                font-size: 1rem;
+                min-height: 44px;
+            }
+
+            .send-button {
+                padding: 0.75rem;
+                min-width: 44px;
+                height: 44px;
+            }
+
+            .hidden.md\\:block {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0.75rem;
+            }
+
+            .hero-section h1 {
+                font-size: 1.5rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .chat-container {
+                height: calc(100vh - 400px);
+                min-height: 280px;
+                padding: 0.75rem;
+            }
+
+            .coach-message, .user-message {
+                max-width: 90%;
+                padding: 0.6rem 0.875rem;
+                font-size: 0.875rem;
+            }
+
+            .message-input {
+                padding: 0.625rem 0.875rem;
+                font-size: 0.9rem;
+            }
+
+            .send-button {
+                min-width: 40px;
+                height: 40px;
             }
         }
     </style>
